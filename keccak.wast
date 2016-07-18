@@ -3,6 +3,9 @@
 ;; Exports a memory block, the first 32 bytes are used as the input to SHA3-256
 ;; and the output offset will be returned.
 ;;
+;; input (136 bytes of zeroes): 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+;; output (keccak-256): 3a5912a7c5faa06ee4fe906253e339467a9ce87d533c65be3c15cb231cdb25f9
+;;
 (module
   (memory 1)
 
@@ -11,8 +14,8 @@
   (func
     (result i32)
     (block
-      (call $KECCAK (i32.const 0) (i32.const 32) (i32.const 32))
-      (return (i32.const 32))
+      (call $KECCAK (i32.const 0) (i32.const 136) (i32.const 136))
+      (return (i32.const 136))
       (unreachable)
     )
   )

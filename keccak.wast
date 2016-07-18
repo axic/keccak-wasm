@@ -817,7 +817,32 @@
   )
 
   ;; finalize
+  ;; FIXME: this is wrong. We assume the input was a multiple of the blocksize
+  ;;        and the residue buffer must be full of zeroes.
+
+  ;; zero-out 136 bytes of space
+  (set_local $input_offset (i32.const 0))
+  (loop $done $loop
+    (if (i32.ge_u (get_local $input_offset) (i32.const 17))
+      (br $done)
+    )
+
+    (i64.store (get_local $input_offset) (i64.const 0))
+
+    (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 1)))
+    (br $loop)
+  )
+
+  ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
+  (i32.store (i32.const 0) (i32.const 0x01))
+
+  ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
+  (i32.store (i32.const 135) (i32.const 0x80))
+
+  (call $KECCAK_BLOCK (i32.const 0) (i32.const 136) (get_local $output_offset))
+
   ;; the first 32 bytes pointed at by $output_offset is the final hash
+
 )
 
 )

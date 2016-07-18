@@ -282,6 +282,79 @@
 
 (func $KECCAK_CHI
   (param $workspace i32)
+
+  (local $A0 i64)
+  (local $A1 i64)
+  (local $i i32)
+
+  ;; for (round = 0; round < 25; i += 5)
+  (set_local $i (i32.const 0))
+  (loop $done $loop
+    (if (i32.ge_u (get_local $i) (i32.const 25))
+      (br $done)
+    )
+
+    (set_local $A0 (i64.load (i32.add (get_local $workspace) (get_local $i))))
+    (set_local $A1 (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1)))))
+
+    ;; A[0 + i] ^= ~A1 & A[2 + i];
+    (i64.store (i32.add (get_local $workspace) (get_local $i))
+      (i64.xor
+        (i64.load (i32.add (get_local $workspace) (get_local $i)))
+        (i64.and
+          (i64.xor (get_local $A1) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2))))
+        )
+      )
+    )
+
+    ;; A[1 + i] ^= ~A[2 + i] & A[3 + i];
+    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1)))
+      (i64.xor
+        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1))))
+        (i64.and
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3))))
+        )
+      )
+    )
+
+    ;; A[2 + i] ^= ~A[3 + i] & A[4 + i];
+    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2)))
+      (i64.xor
+        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2))))
+        (i64.and
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4))))
+        )
+      )
+    )
+
+    ;; A[3 + i] ^= ~A[4 + i] & A0;
+    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3)))
+      (i64.xor
+        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3))))
+        (i64.and
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (get_local $A0)
+        )
+      )
+    )
+
+    ;; A[4 + i] ^= ~A0 & A1;
+    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4)))
+      (i64.xor
+        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4))))
+        (i64.and
+          (i64.xor (get_local $A0) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (get_local $A1)
+        )
+      )
+    )
+
+    (set_local $i (i32.add (get_local $i) (i32.const 5)))
+    (br $loop)
+  )
 )
 
 (func $KECCAK_PERMUTE

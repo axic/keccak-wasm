@@ -28,8 +28,8 @@
 ;; - input length (i32)
 ;; - output offset (i32)
 ;;
-;; Output offset is special. It needs at least 520 bytes of space.
-;; (Of which the first 136 bytes is used as hash workspace,
+;; Output offset is special. It needs at least 584 bytes of space.
+;; (Of which the first 200 bytes is used as hash workspace,
 ;; the second 192 bytes is used for the round constants and
 ;; the third 192 bytes is used for the rotation constants.)
 ;;
@@ -48,6 +48,7 @@
 ;; gets implemented: https://github.com/WebAssembly/sexpr-wasm-prototype/issues/92
 ;;
 
+;; FIXME: offsets
 (func $KECCAK_THETA
   (param $workspace i32)
 
@@ -67,12 +68,12 @@
     (i64.xor
       (i64.load (i32.add (get_local $workspace) (i32.const 0)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.const 5)))
+        (i64.load (i32.add (get_local $workspace) (i32.const 40)))
         (i64.xor
-          (i64.load (i32.add (get_local $workspace) (i32.const 10)))
+          (i64.load (i32.add (get_local $workspace) (i32.const 80)))
           (i64.xor
-            (i64.load (i32.add (get_local $workspace) (i32.const 15)))
-            (i64.load (i32.add (get_local $workspace) (i32.const 20)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 120)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 160)))
           )
         )
       )
@@ -385,6 +386,7 @@
   )
 )
 
+;; FIXME: offsets
 (func $KECCAK_RHO
   (param $workspace i32)
 
@@ -407,15 +409,16 @@
       (br $done)
     )
 
-    (set_local $tmp (i32.add (get_local $workspace) (i32.const 1)))
+    (set_local $tmp (i32.add (get_local $workspace) (i32.const 8)))
 
-    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 41))))))
+    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 328))))))
 
-    (set_local $i (i32.add (get_local $i) (i32.const 1)))
+    (set_local $i (i32.add (get_local $i) (i32.const 8)))
     (br $loop)
   )
 )
 
+;; FIXME: offsets
 (func $KECCAK_PI
   (param $workspace i32)
 
@@ -452,6 +455,7 @@
   (i64.store (i32.add (get_local $workspace) (i32.const 10)) (get_local $A1))
 )
 
+;; FIXME: offsets
 (func $KECCAK_CHI
   (param $workspace i32)
 
@@ -589,62 +593,6 @@
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 1))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 1)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 1)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 2))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 2)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 2)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 3))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 3)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 3)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 4))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 4)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 4)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 5))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 5)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 5)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 6))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 6)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 6)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 7))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 7)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 7)))
-    )
-  )
-
-  (i64.store
     (i32.add (get_local $output_offset) (i32.const 8))
     (i64.xor
       (i64.load (i32.add (get_local $output_offset) (i32.const 8)))
@@ -653,66 +601,122 @@
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 9))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 9)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 9)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 10))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 10)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 10)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 11))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 11)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 11)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 12))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 12)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 12)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 13))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 13)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 13)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 14))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 14)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 14)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $output_offset) (i32.const 15))
-    (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 15)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 15)))
-    )
-  )
-
-  (i64.store
     (i32.add (get_local $output_offset) (i32.const 16))
     (i64.xor
       (i64.load (i32.add (get_local $output_offset) (i32.const 16)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 16)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 24))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 24)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 24)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 32))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 32)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 32)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 40))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 40)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 40)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 48))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 48)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 48)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 56))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 56)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 56)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 64))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 64)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 64)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 72))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 72)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 72)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 80))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 80)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 80)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 88))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 88)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 88)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 96))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 96)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 96)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 104))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 104)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 104)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 112))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 112)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 112)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 120))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 120)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 120)))
+    )
+  )
+
+  (i64.store
+    (i32.add (get_local $output_offset) (i32.const 128))
+    (i64.xor
+      (i64.load (i32.add (get_local $output_offset) (i32.const 128)))
+      (i64.load (i32.add (get_local $input_offset) (i32.const 128)))
     )
   )
   

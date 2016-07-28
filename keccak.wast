@@ -28,7 +28,7 @@
 ;; - input length (i32)
 ;; - output offset (i32)
 ;;
-;; Output offset is special. It needs at least 584 bytes of space.
+;; Output offset is special. It needs at least 592 bytes of space.
 ;; (Of which the first 200 bytes is used as hash workspace,
 ;; the second 192 bytes is used for the round constants and
 ;; the third 192 bytes is used for the rotation constants.)
@@ -48,7 +48,6 @@
 ;; gets implemented: https://github.com/WebAssembly/sexpr-wasm-prototype/issues/92
 ;;
 
-;; FIXME: offsets
 (func $KECCAK_THETA
   (param $workspace i32)
 
@@ -82,14 +81,14 @@
 
   (set_local $C1
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 1)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 8)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.const 6)))
+        (i64.load (i32.add (get_local $workspace) (i32.const 48)))
         (i64.xor
-          (i64.load (i32.add (get_local $workspace) (i32.const 11)))
+          (i64.load (i32.add (get_local $workspace) (i32.const 88)))
           (i64.xor
-            (i64.load (i32.add (get_local $workspace) (i32.const 16)))
-            (i64.load (i32.add (get_local $workspace) (i32.const 21)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 128)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 168)))
           )
         )
       )
@@ -98,14 +97,14 @@
 
   (set_local $C2
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 2)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 16)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.const 7)))
+        (i64.load (i32.add (get_local $workspace) (i32.const 56)))
         (i64.xor
-          (i64.load (i32.add (get_local $workspace) (i32.const 12)))
+          (i64.load (i32.add (get_local $workspace) (i32.const 96)))
           (i64.xor
-            (i64.load (i32.add (get_local $workspace) (i32.const 17)))
-            (i64.load (i32.add (get_local $workspace) (i32.const 22)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 136)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 176)))
           )
         )
       )
@@ -114,14 +113,14 @@
 
   (set_local $C3
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 3)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 24)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.const 8)))
+        (i64.load (i32.add (get_local $workspace) (i32.const 64)))
         (i64.xor
-          (i64.load (i32.add (get_local $workspace) (i32.const 13)))
+          (i64.load (i32.add (get_local $workspace) (i32.const 104)))
           (i64.xor
-            (i64.load (i32.add (get_local $workspace) (i32.const 18)))
-            (i64.load (i32.add (get_local $workspace) (i32.const 23)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 144)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 184)))
           )
         )
       )
@@ -130,14 +129,14 @@
 
   (set_local $C4
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 4)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 32)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.const 9)))
+        (i64.load (i32.add (get_local $workspace) (i32.const 72)))
         (i64.xor
-          (i64.load (i32.add (get_local $workspace) (i32.const 14)))
+          (i64.load (i32.add (get_local $workspace) (i32.const 112)))
           (i64.xor
-            (i64.load (i32.add (get_local $workspace) (i32.const 19)))
-            (i64.load (i32.add (get_local $workspace) (i32.const 24)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 152)))
+            (i64.load (i32.add (get_local $workspace) (i32.const 192)))
           )
         )
       )
@@ -213,180 +212,179 @@
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 5))
+  (i64.store (i32.add (get_local $workspace) (i32.const 40))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 5)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 40)))
       (get_local $D0)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 10))
+  (i64.store (i32.add (get_local $workspace) (i32.const 80))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 10)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 80)))
       (get_local $D0)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 15))
+  (i64.store (i32.add (get_local $workspace) (i32.const 120))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 15)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 120)))
       (get_local $D0)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 20))
+  (i64.store (i32.add (get_local $workspace) (i32.const 160))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 20)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 160)))
       (get_local $D0)
     )
   )
 
   ;; x = 1
-  (i64.store (i32.add (get_local $workspace) (i32.const 1))
+  (i64.store (i32.add (get_local $workspace) (i32.const 8))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 1)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 8)))
       (get_local $D1)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 6))
+  (i64.store (i32.add (get_local $workspace) (i32.const 48))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 6)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 48)))
       (get_local $D1)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 11))
+  (i64.store (i32.add (get_local $workspace) (i32.const 88))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 11)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 88)))
       (get_local $D1)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 16))
+  (i64.store (i32.add (get_local $workspace) (i32.const 128))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 16)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 128)))
       (get_local $D1)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 21))
+  (i64.store (i32.add (get_local $workspace) (i32.const 168))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 21)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 168)))
       (get_local $D1)
     )
   )
 
   ;; x = 2
-  (i64.store (i32.add (get_local $workspace) (i32.const 2))
+  (i64.store (i32.add (get_local $workspace) (i32.const 16))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 2)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 16)))
       (get_local $D2)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 7))
+  (i64.store (i32.add (get_local $workspace) (i32.const 56))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 7)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 56)))
       (get_local $D2)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 12))
+  (i64.store (i32.add (get_local $workspace) (i32.const 96))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 12)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 96)))
       (get_local $D2)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 17))
+  (i64.store (i32.add (get_local $workspace) (i32.const 136))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 17)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 136)))
       (get_local $D2)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 22))
+  (i64.store (i32.add (get_local $workspace) (i32.const 176))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 22)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 176)))
       (get_local $D2)
     )
   )
 
   ;; x = 3
-  (i64.store (i32.add (get_local $workspace) (i32.const 3))
+  (i64.store (i32.add (get_local $workspace) (i32.const 24))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 3)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 24)))
       (get_local $D3)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 8))
+  (i64.store (i32.add (get_local $workspace) (i32.const 64))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 8)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 64)))
       (get_local $D3)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 13))
+  (i64.store (i32.add (get_local $workspace) (i32.const 104))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 13)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 104)))
       (get_local $D3)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 18))
+  (i64.store (i32.add (get_local $workspace) (i32.const 144))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 18)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 144)))
       (get_local $D3)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 23))
+  (i64.store (i32.add (get_local $workspace) (i32.const 184))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 23)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 184)))
       (get_local $D3)
     )
   )
 
   ;; x = 4
-  (i64.store (i32.add (get_local $workspace) (i32.const 4))
+  (i64.store (i32.add (get_local $workspace) (i32.const 32))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 4)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 32)))
       (get_local $D4)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 9))
+  (i64.store (i32.add (get_local $workspace) (i32.const 72))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 9)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 72)))
       (get_local $D4)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 14))
+  (i64.store (i32.add (get_local $workspace) (i32.const 112))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 14)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 112)))
       (get_local $D4)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 19))
+  (i64.store (i32.add (get_local $workspace) (i32.const 152))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 19)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 152)))
       (get_local $D4)
     )
   )
 
-  (i64.store (i32.add (get_local $workspace) (i32.const 24))
+  (i64.store (i32.add (get_local $workspace) (i32.const 192))
     (i64.xor
-      (i64.load (i32.add (get_local $workspace) (i32.const 24)))
+      (i64.load (i32.add (get_local $workspace) (i32.const 192)))
       (get_local $D4)
     )
   )
 )
 
-;; FIXME: offsets
 (func $KECCAK_RHO
   (param $workspace i32)
 
@@ -402,60 +400,58 @@
   (local $tmp i32)
   (local $i i32)
 
-  ;; for (i = 0; round < 24; i++)
+  ;; for (i = 0; i <= 24; i++)
   (set_local $i (i32.const 0))
   (loop $done $loop
     (if (i32.ge_u (get_local $i) (i32.const 24))
       (br $done)
     )
 
-    (set_local $tmp (i32.add (get_local $workspace) (i32.const 8)))
+    (set_local $tmp (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (i32.const 1) (get_local $i)))))
 
-    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 328))))))
+    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $workspace) (i32.add (i32.mul (i32.const 8) (get_local $i)) (i32.const 400))))))
 
-    (set_local $i (i32.add (get_local $i) (i32.const 8)))
+    (set_local $i (i32.add (get_local $i) (i32.const 1)))
     (br $loop)
   )
 )
 
-;; FIXME: offsets
 (func $KECCAK_PI
   (param $workspace i32)
 
   (local $A1 i64)
-  (set_local $A1 (i64.load (i32.add (get_local $workspace) (i32.const 1))))
+  (set_local $A1 (i64.load (i32.add (get_local $workspace) (i32.const 8))))
 
   ;; Swap non-overlapping fields, i.e. $A1 = $A6, etc.
   ;; NOTE: $A0 is untouched
-  (i64.store (i32.add (get_local $workspace) (i32.const 1)) (i64.load (i32.add (get_local $workspace) (i32.const 6))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 6)) (i64.load (i32.add (get_local $workspace) (i32.const 9))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 9)) (i64.load (i32.add (get_local $workspace) (i32.const 22))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 22)) (i64.load (i32.add (get_local $workspace) (i32.const 14))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 14)) (i64.load (i32.add (get_local $workspace) (i32.const 20))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 20)) (i64.load (i32.add (get_local $workspace) (i32.const 2))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 2)) (i64.load (i32.add (get_local $workspace) (i32.const 12))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 12)) (i64.load (i32.add (get_local $workspace) (i32.const 13))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 13)) (i64.load (i32.add (get_local $workspace) (i32.const 19))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 19)) (i64.load (i32.add (get_local $workspace) (i32.const 23))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 23)) (i64.load (i32.add (get_local $workspace) (i32.const 15))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 15)) (i64.load (i32.add (get_local $workspace) (i32.const 4))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 4)) (i64.load (i32.add (get_local $workspace) (i32.const 24))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 24)) (i64.load (i32.add (get_local $workspace) (i32.const 21))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 21)) (i64.load (i32.add (get_local $workspace) (i32.const 8))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 8)) (i64.load (i32.add (get_local $workspace) (i32.const 16))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 16)) (i64.load (i32.add (get_local $workspace) (i32.const 5))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 5)) (i64.load (i32.add (get_local $workspace) (i32.const 3))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 3)) (i64.load (i32.add (get_local $workspace) (i32.const 18))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 18)) (i64.load (i32.add (get_local $workspace) (i32.const 17))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 17)) (i64.load (i32.add (get_local $workspace) (i32.const 11))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 11)) (i64.load (i32.add (get_local $workspace) (i32.const 7))))
-  (i64.store (i32.add (get_local $workspace) (i32.const 7)) (i64.load (i32.add (get_local $workspace) (i32.const 10))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 8)) (i64.load (i32.add (get_local $workspace) (i32.const 48))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 48)) (i64.load (i32.add (get_local $workspace) (i32.const 72))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 72)) (i64.load (i32.add (get_local $workspace) (i32.const 176))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 176)) (i64.load (i32.add (get_local $workspace) (i32.const 112))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 112)) (i64.load (i32.add (get_local $workspace) (i32.const 160))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 160)) (i64.load (i32.add (get_local $workspace) (i32.const 16))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 16)) (i64.load (i32.add (get_local $workspace) (i32.const 96))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 96)) (i64.load (i32.add (get_local $workspace) (i32.const 104))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 104)) (i64.load (i32.add (get_local $workspace) (i32.const 152))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 152)) (i64.load (i32.add (get_local $workspace) (i32.const 184))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 184)) (i64.load (i32.add (get_local $workspace) (i32.const 120))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 120)) (i64.load (i32.add (get_local $workspace) (i32.const 32))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 32)) (i64.load (i32.add (get_local $workspace) (i32.const 192))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 192)) (i64.load (i32.add (get_local $workspace) (i32.const 168))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 168)) (i64.load (i32.add (get_local $workspace) (i32.const 64))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 64)) (i64.load (i32.add (get_local $workspace) (i32.const 128))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 128)) (i64.load (i32.add (get_local $workspace) (i32.const 40))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 40)) (i64.load (i32.add (get_local $workspace) (i32.const 24))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 24)) (i64.load (i32.add (get_local $workspace) (i32.const 144))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 144)) (i64.load (i32.add (get_local $workspace) (i32.const 136))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 136)) (i64.load (i32.add (get_local $workspace) (i32.const 88))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 88)) (i64.load (i32.add (get_local $workspace) (i32.const 56))))
+  (i64.store (i32.add (get_local $workspace) (i32.const 56)) (i64.load (i32.add (get_local $workspace) (i32.const 80))))
 
   ;; Place the previously saved overlapping field
-  (i64.store (i32.add (get_local $workspace) (i32.const 10)) (get_local $A1))
+  (i64.store (i32.add (get_local $workspace) (i32.const 80)) (get_local $A1))
 )
 
-;; FIXME: offsets
 (func $KECCAK_CHI
   (param $workspace i32)
 
@@ -470,57 +466,57 @@
       (br $done)
     )
 
-    (set_local $A0 (i64.load (i32.add (get_local $workspace) (get_local $i))))
-    (set_local $A1 (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1)))))
+    (set_local $A0 (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (get_local $i)))))
+    (set_local $A1 (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1))))))
 
     ;; A[0 + i] ^= ~A1 & A[2 + i];
-    (i64.store (i32.add (get_local $workspace) (get_local $i))
+    (i64.store (i32.add (get_local $workspace) (i32.mul (i32.const 8) (get_local $i)))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (get_local $i)))
+        (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (get_local $i))))
         (i64.and
           (i64.xor (get_local $A1) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
-          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2))))
+          (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2)))))
         )
       )
     )
 
     ;; A[1 + i] ^= ~A[2 + i] & A[3 + i];
-    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1)))
+    (i64.store (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1))))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 1))))
+        (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1)))))
         (i64.and
-          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
-          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3))))
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2))))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3)))))
         )
       )
     )
 
     ;; A[2 + i] ^= ~A[3 + i] & A[4 + i];
-    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2)))
+    (i64.store (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2))))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 2))))
+        (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2)))))
         (i64.and
-          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
-          (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4))))
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3))))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4)))))
         )
       )
     )
 
     ;; A[3 + i] ^= ~A[4 + i] & A0;
-    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3)))
+    (i64.store (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3))))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 3))))
+        (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3)))))
         (i64.and
-          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4)))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
+          (i64.xor (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4))))) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
           (get_local $A0)
         )
       )
     )
 
     ;; A[4 + i] ^= ~A0 & A1;
-    (i64.store (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4)))
+    (i64.store (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4))))
       (i64.xor
-        (i64.load (i32.add (get_local $workspace) (i32.add (get_local $i) (i32.const 4))))
+        (i64.load (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4)))))
         (i64.and
           (i64.xor (get_local $A0) (i64.const 0xFFFFFFFFFFFFFFFF)) ;; bitwise not
           (get_local $A1)
@@ -539,7 +535,7 @@
   (local $round_consts i32)
   (local $round i32)
 
-  (set_local $round_consts (i32.add (get_local $workspace) (i32.const 17)))
+  (set_local $round_consts (i32.add (get_local $workspace) (i32.const 200)))
 
   ;; for (round = 0; round < 24; round++)
   (set_local $round (i32.const 0))
@@ -565,7 +561,7 @@
     (i64.store (get_local $workspace)
       (i64.xor
         (i64.load (get_local $workspace))
-        (i64.load (i32.add (get_local $round_consts) (get_local $round)))
+        (i64.load (i32.add (get_local $round_consts) (i32.mul (i32.const 8) (get_local $round))))
       )
     )
 
@@ -735,7 +731,7 @@
   ;; clear out the result memory
   (set_local $i (i32.const 0))
   (loop $done $loop
-    (if (i32.ge_u (get_local $i) (i32.const 136))
+    (if (i32.ge_u (get_local $i) (i32.const 200))
       (br $done)
     )
 
@@ -746,56 +742,56 @@
   )
 
   ;; insert the round constants (used by $KECCAK_IOTA)
-  (i64.store (i32.add (get_local $output_offset) (i32.const 136)) (i64.const 0x0000000000000001))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 144)) (i64.const 0x0000000000008082))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 152)) (i64.const 0x800000000000808A))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 160)) (i64.const 0x8000000080008000))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 168)) (i64.const 0x000000000000808B))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 176)) (i64.const 0x0000000080000001))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 184)) (i64.const 0x8000000080008081))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 192)) (i64.const 0x8000000000008009))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 200)) (i64.const 0x000000000000008A))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 208)) (i64.const 0x0000000000000088))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 216)) (i64.const 0x0000000080008009))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 224)) (i64.const 0x000000008000000A))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 232)) (i64.const 0x000000008000808B))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 240)) (i64.const 0x800000000000008B))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 248)) (i64.const 0x8000000000008089))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 256)) (i64.const 0x8000000000008003))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 264)) (i64.const 0x8000000000008002))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 272)) (i64.const 0x8000000000000080))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 280)) (i64.const 0x000000000000800A))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 288)) (i64.const 0x800000008000000A))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 296)) (i64.const 0x8000000080008081))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 304)) (i64.const 0x8000000000008080))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 312)) (i64.const 0x0000000080000001))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 320)) (i64.const 0x8000000080008008))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 200)) (i64.const 0x0000000000000001))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 208)) (i64.const 0x0000000000008082))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 216)) (i64.const 0x800000000000808A))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 224)) (i64.const 0x8000000080008000))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 232)) (i64.const 0x000000000000808B))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 240)) (i64.const 0x0000000080000001))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 248)) (i64.const 0x8000000080008081))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 256)) (i64.const 0x8000000000008009))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 264)) (i64.const 0x000000000000008A))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 272)) (i64.const 0x0000000000000088))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 280)) (i64.const 0x0000000080008009))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 288)) (i64.const 0x000000008000000A))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 296)) (i64.const 0x000000008000808B))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 304)) (i64.const 0x800000000000008B))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 312)) (i64.const 0x8000000000008089))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 320)) (i64.const 0x8000000000008003))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 328)) (i64.const 0x8000000000008002))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 336)) (i64.const 0x8000000000000080))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 344)) (i64.const 0x000000000000800A))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 352)) (i64.const 0x800000008000000A))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 360)) (i64.const 0x8000000080008081))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 368)) (i64.const 0x8000000000008080))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 376)) (i64.const 0x0000000080000001))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 384)) (i64.const 0x8000000080008008))
 
   ;; insert the rotation constants (used by $KECCAK_RHO)
-  (i64.store (i32.add (get_local $output_offset) (i32.const 328)) (i64.const 1))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 336)) (i64.const 62))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 344)) (i64.const 28))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 352)) (i64.const 27))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 360)) (i64.const 36))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 368)) (i64.const 44))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 376)) (i64.const 6))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 384)) (i64.const 55))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 392)) (i64.const 20))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 400)) (i64.const 3))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 408)) (i64.const 10))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 416)) (i64.const 43))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 424)) (i64.const 25))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 432)) (i64.const 39))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 440)) (i64.const 41))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 448)) (i64.const 45))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 456)) (i64.const 15))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 464)) (i64.const 21))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 472)) (i64.const 8))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 480)) (i64.const 18))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 488)) (i64.const 2))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 496)) (i64.const 61))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 504)) (i64.const 56))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 512)) (i64.const 14))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 400)) (i64.const 1))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 408)) (i64.const 62))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 416)) (i64.const 28))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 424)) (i64.const 27))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 432)) (i64.const 36))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 440)) (i64.const 44))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 448)) (i64.const 6))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 456)) (i64.const 55))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 464)) (i64.const 20))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 472)) (i64.const 3))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 480)) (i64.const 10))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 488)) (i64.const 43))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 496)) (i64.const 25))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 504)) (i64.const 39))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 512)) (i64.const 41))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 520)) (i64.const 45))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 528)) (i64.const 15))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 536)) (i64.const 21))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 544)) (i64.const 8))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 552)) (i64.const 18))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 560)) (i64.const 2))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 568)) (i64.const 61))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 576)) (i64.const 56))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 584)) (i64.const 14))
 
   ;; while (input_length > block_size)
   (loop $done $loop

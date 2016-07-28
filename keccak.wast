@@ -719,6 +719,44 @@
   (call $KECCAK_PERMUTE (get_local $workspace))
 )
 
+;;
+;; Initialise the context
+;;
+;; The space must be at least 728 bytes
+;;
+(func $KECCAK_INIT
+  (param $context_offset i32)
+)
+
+;;
+;; Push input to the context
+;;
+(func $KECCAK_UPDATE
+  (param $context_offset i32)
+  (param $input_offset i32)
+  (param $input_length i32)
+)
+
+;;
+;; Finalise and return the hash
+;;
+;; The 256 bit hash is returned at the output offset.
+;;
+(func $KECCAK_FINISH
+  (param $context_offset i32)
+  (param $output_offset i32)
+)
+
+;;
+;; Calculate the hash. Helper method incorporating the above three.
+;;
+(func $KECCAK_CALC
+  (param $context_offset i32)
+  (param $input_offset i32)
+  (param $input_length i32)
+  (param $output_offset i32)
+)
+
 ;; Keccak capacity parameter = bits * 2
 ;; Block size = (1600 - bits * 2) / 8 = 136
 (func $KECCAK

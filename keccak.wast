@@ -730,24 +730,20 @@
   (param $input_length i32)
   (param $output_offset i32)
 
+  (local $i i32)
+
   ;; clear out the result memory
-  (i64.store (get_local $output_offset) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 8)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 16)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 24)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 32)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 40)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 48)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 56)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 64)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 72)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 80)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 88)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 96)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 104)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 112)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 120)) (i64.const 0))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 128)) (i64.const 0))
+  (set_local $i (i32.const 0))
+  (loop $done $loop
+    (if (i32.ge_u (get_local $i) (i32.const 136))
+      (br $done)
+    )
+
+    (i64.store (i32.add (get_local $output_offset) (get_local $i)) (i64.const 0))
+
+    (set_local $i (i32.add (get_local $i) (i32.const 8)))
+    (br $loop)
+  )
 
   ;; insert the round constants (used by $KECCAK_IOTA)
   (i64.store (i32.add (get_local $output_offset) (i32.const 136)) (i64.const 0x0000000000000001))

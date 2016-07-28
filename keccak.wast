@@ -726,7 +726,11 @@
   (param $input_length i32)
   (param $output_offset i32)
 
+  (local $tmp i64)
   (local $i i32)
+  (local $zeroblock_offset i32)
+
+  (set_local $zeroblock_offset (get_local $input_offset))
 
   ;; clear out the result memory
   (set_local $i (i32.const 0))
@@ -817,7 +821,7 @@
   ;;        and the residue buffer must be full of zeroes.
 
   ;; zero-out 136 bytes of space
-  (set_local $input_offset (i32.const 0))
+  (set_local $input_offset (get_local $zeroblock_offset))
   (loop $done $loop
     (if (i32.ge_u (get_local $input_offset) (i32.const 136))
       (br $done)
@@ -830,12 +834,12 @@
   )
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
-  (i32.store (i32.const 0) (i32.const 0x01))
+  (i32.store8 (get_local $zeroblock_offset) (i32.const 0x01))
 
   ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
-  (i32.store (i32.const 135) (i32.const 0x80))
+  (i32.store8 (i32.add (get_local $zeroblock_offset) (i32.const 135)) (i32.const 0x80))
 
-  (call $KECCAK_BLOCK (i32.const 0) (i32.const 136) (get_local $output_offset))
+  (call $KECCAK_BLOCK (get_local $zeroblock_offset) (i32.const 136) (get_local $output_offset))
 
   ;; the first 32 bytes pointed at by $output_offset is the final hash
 

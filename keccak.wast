@@ -387,6 +387,7 @@
 
 (func $KECCAK_RHO
   (param $workspace i32)
+  (param $rotation_consts i32)
 
   ;;(local $tmp i32)
 
@@ -409,7 +410,7 @@
 
     (set_local $tmp (i32.add (get_local $workspace) (i32.mul (i32.const 8) (i32.add (i32.const 1) (get_local $i)))))
 
-    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $workspace) (i32.add (i32.mul (i32.const 8) (get_local $i)) (i32.const 400))))))
+    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $rotation_consts) (i32.mul (i32.const 8) (get_local $i))))))
 
     (set_local $i (i32.add (get_local $i) (i32.const 1)))
     (br $loop)
@@ -532,10 +533,12 @@
 (func $KECCAK_PERMUTE
   (param $workspace i32)
 
+  (local $rotation_consts i32)
   (local $round_consts i32)
   (local $round i32)
 
   (set_local $round_consts (i32.add (get_local $workspace) (i32.const 200)))
+  (set_local $rotation_consts (i32.add (get_local $workspace) (i32.const 400)))
 
   ;; for (round = 0; round < 24; round++)
   (set_local $round (i32.const 0))
@@ -548,7 +551,7 @@
     (call $KECCAK_THETA (get_local $workspace))
 
     ;; rho transform
-    (call $KECCAK_RHO (get_local $workspace))
+    (call $KECCAK_RHO (get_local $workspace) (get_local $rotation_consts))
 
     ;; pi transform
     (call $KECCAK_PI (get_local $workspace))

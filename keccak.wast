@@ -14,7 +14,7 @@
   (func
     (result i32)
     (block
-      (call $KECCAK (i32.const 0) (i32.const 136) (i32.const 136))
+      (call $KECCAK (i32.const 268) (i32.const 0) (i32.const 136) (i32.const 136))
       (return (i32.const 136))
       (unreachable)
     )
@@ -576,145 +576,145 @@
 (func $KECCAK_BLOCK
   (param $input_offset i32)
   (param $input_length i32)
-  (param $output_offset i32)
+  (param $context_offset i32)
   
   (local $workspace i32)
-  (set_local $workspace (get_local $output_offset))
+  (set_local $workspace (get_local $context_offset))
   
   ;; read blocks in little-endian order and XOR against workspace
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 0))
+    (i32.add (get_local $context_offset) (i32.const 0))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 0)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 0)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 0)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 8))
+    (i32.add (get_local $context_offset) (i32.const 8))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 8)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 8)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 8)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 16))
+    (i32.add (get_local $context_offset) (i32.const 16))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 16)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 16)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 16)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 24))
+    (i32.add (get_local $context_offset) (i32.const 24))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 24)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 24)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 24)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 32))
+    (i32.add (get_local $context_offset) (i32.const 32))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 32)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 32)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 32)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 40))
+    (i32.add (get_local $context_offset) (i32.const 40))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 40)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 40)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 40)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 48))
+    (i32.add (get_local $context_offset) (i32.const 48))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 48)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 48)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 48)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 56))
+    (i32.add (get_local $context_offset) (i32.const 56))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 56)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 56)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 56)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 64))
+    (i32.add (get_local $context_offset) (i32.const 64))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 64)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 64)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 64)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 72))
+    (i32.add (get_local $context_offset) (i32.const 72))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 72)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 72)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 72)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 80))
+    (i32.add (get_local $context_offset) (i32.const 80))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 80)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 80)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 80)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 88))
+    (i32.add (get_local $context_offset) (i32.const 88))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 88)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 88)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 88)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 96))
+    (i32.add (get_local $context_offset) (i32.const 96))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 96)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 96)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 96)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 104))
+    (i32.add (get_local $context_offset) (i32.const 104))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 104)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 104)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 104)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 112))
+    (i32.add (get_local $context_offset) (i32.const 112))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 112)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 112)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 112)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 120))
+    (i32.add (get_local $context_offset) (i32.const 120))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 120)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 120)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 120)))
     )
   )
 
   (i64.store
-    (i32.add (get_local $output_offset) (i32.const 128))
+    (i32.add (get_local $context_offset) (i32.const 128))
     (i64.xor
-      (i64.load (i32.add (get_local $output_offset) (i32.const 128)))
+      (i64.load (i32.add (get_local $context_offset) (i32.const 128)))
       (i64.load (i32.add (get_local $input_offset) (i32.const 128)))
     )
   )
@@ -729,67 +729,25 @@
 ;;
 (func $KECCAK_INIT
   (param $context_offset i32)
-)
-
-;;
-;; Push input to the context
-;;
-(func $KECCAK_UPDATE
-  (param $context_offset i32)
-  (param $input_offset i32)
-  (param $input_length i32)
-)
-
-;;
-;; Finalise and return the hash
-;;
-;; The 256 bit hash is returned at the output offset.
-;;
-(func $KECCAK_FINISH
-  (param $context_offset i32)
-  (param $output_offset i32)
-)
-
-;;
-;; Calculate the hash. Helper method incorporating the above three.
-;;
-(func $KECCAK_CALC
-  (param $context_offset i32)
-  (param $input_offset i32)
-  (param $input_length i32)
-  (param $output_offset i32)
-)
-
-;; Keccak capacity parameter = bits * 2
-;; Block size = (1600 - bits * 2) / 8 = 136
-(func $KECCAK
-  (param $input_offset i32)
-  (param $input_length i32)
-  (param $output_offset i32)
-
-  (local $tmp i64)
   (local $i i32)
-  (local $zeroblock_offset i32)
   (local $round_consts i32)
   (local $rotation_consts i32)
 
-  (set_local $zeroblock_offset (get_local $input_offset))
-
-  ;; clear out the result memory
+  ;; clear out the context memory
   (set_local $i (i32.const 0))
   (loop $done $loop
     (if (i32.ge_u (get_local $i) (i32.const 200))
       (br $done)
     )
 
-    (i64.store (i32.add (get_local $output_offset) (get_local $i)) (i64.const 0))
+    (i64.store (i32.add (get_local $context_offset) (get_local $i)) (i64.const 0))
 
     (set_local $i (i32.add (get_local $i) (i32.const 8)))
     (br $loop)
   )
 
   ;; insert the round constants (used by $KECCAK_IOTA)
-  (set_local $round_consts (i32.add (get_local $output_offset) (i32.const 200)))
+  (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 200)))
   (i64.store (i32.add (get_local $round_consts) (i32.const 0)) (i64.const 0x0000000000000001))
   (i64.store (i32.add (get_local $round_consts) (i32.const 8)) (i64.const 0x0000000000008082))
   (i64.store (i32.add (get_local $round_consts) (i32.const 16)) (i64.const 0x800000000000808A))
@@ -816,7 +774,7 @@
   (i64.store (i32.add (get_local $round_consts) (i32.const 184)) (i64.const 0x8000000080008008))
 
   ;; insert the rotation constants (used by $KECCAK_RHO)
-  (set_local $rotation_consts (i32.add (get_local $output_offset) (i32.const 400)))
+  (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 400)))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 0)) (i64.const 1))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 8)) (i64.const 62))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 16)) (i64.const 28))
@@ -841,42 +799,65 @@
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 168)) (i64.const 61))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 176)) (i64.const 56))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 184)) (i64.const 14))
+)
+
+;;
+;; Push input to the context
+;;
+(func $KECCAK_UPDATE
+  (param $context_offset i32)
+  (param $input_offset i32)
+  (param $input_length i32)
 
   ;; while (input_length > block_size)
   (loop $done $loop
     (if (i32.lt_u (get_local $input_length) (i32.const 136))
       (br $done)
     )
-    
-    (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $output_offset))
-    
+
+    (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+
     (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
     (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
     (br $loop)
   )
-  
+
   ;; process last <block_size block
   ;; FIXME: the last block needs to be padded with zeroes and two markers need to be added
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
-    (call $KECCAK_BLOCK (get_local $input_offset) (get_local $input_length) (get_local $output_offset))
+    (call $KECCAK_BLOCK (get_local $input_offset) (get_local $input_length) (get_local $context_offset))
   )
+)
+
+;;
+;; Finalise and return the hash
+;;
+;; The 256 bit hash is returned at the output offset.
+;;
+(func $KECCAK_FINISH
+  (param $context_offset i32)
+  (param $output_offset i32)
+
+  (local $zeroblock_offset i32)
 
   ;; finalize
   ;; FIXME: this is wrong. We assume the input was a multiple of the blocksize
   ;;        and the residue buffer must be full of zeroes.
 
   ;; zero-out 136 bytes of space
-  (set_local $input_offset (get_local $zeroblock_offset))
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 584)))
   (loop $done $loop
-    (if (i32.ge_u (get_local $input_offset) (i32.const 136))
+    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 720))
       (br $done)
     )
 
-    (i64.store (get_local $input_offset) (i64.const 0))
+    (i64.store (get_local $zeroblock_offset) (i64.const 0))
 
-    (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 8)))
+    (set_local $zeroblock_offset (i32.add (get_local $zeroblock_offset) (i32.const 8)))
     (br $loop)
   )
+
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 584)))
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
   (i32.store8 (get_local $zeroblock_offset) (i32.const 0x01))
@@ -884,10 +865,27 @@
   ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
   (i32.store8 (i32.add (get_local $zeroblock_offset) (i32.const 135)) (i32.const 0x80))
 
-  (call $KECCAK_BLOCK (get_local $zeroblock_offset) (i32.const 136) (get_local $output_offset))
+  (call $KECCAK_BLOCK (get_local $zeroblock_offset) (i32.const 136) (get_local $context_offset))
 
   ;; the first 32 bytes pointed at by $output_offset is the final hash
+  (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 8)) (i64.load (i32.add (get_local $context_offset) (i32.const 8))))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 16)) (i64.load (i32.add (get_local $context_offset) (i32.const 16))))
+  (i64.store (i32.add (get_local $output_offset) (i32.const 24)) (i64.load (i32.add (get_local $context_offset) (i32.const 24))))
+)
 
+;;
+;; Calculate the hash. Helper method incorporating the above three.
+;;
+(func $KECCAK
+  (param $context_offset i32)
+  (param $input_offset i32)
+  (param $input_length i32)
+  (param $output_offset i32)
+
+  (call $KECCAK_INIT (get_local $context_offset))
+  (call $KECCAK_UPDATE (get_local $context_offset) (get_local $input_offset) (get_local $input_length))
+  (call $KECCAK_FINISH (get_local $context_offset) (get_local $output_offset))
 )
 
 )

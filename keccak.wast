@@ -38,6 +38,13 @@
 ;; NOTE: it only works for inputs multiple of the block size.
 ;;       If the input is shorted, please pad it with trailing zeroes.
 ;;
+;; The context is laid out as follows:
+;;   0: 1600 bits - 200 bytes - hashing state
+;; 200:   64 bits -   8 bytes - buffer position
+;; 208: 1536 bits - 192 bytes - leftover buffer
+;; 400: 1536 bits - 192 bytes - round constants
+;; 592: 1536 bits - 192 bytes - rotation constants
+;;
 ;; --
 ;;
 ;; Specification at: http://keccak.noekeon.org/specs_summary.html

@@ -9,8 +9,8 @@
 ;;
 ;; The context is laid out as follows:
 ;;   0: 1600 bits - 200 bytes - hashing state
-;; 200:   64 bits -   8 bytes - buffer position
-;; 208: 1536 bits - 192 bytes - leftover buffer
+;; 200:   64 bits -   8 bytes - residue position
+;; 208: 1536 bits - 192 bytes - residue buffer
 ;; 400: 1536 bits - 192 bytes - round constants
 ;; 592: 1600 bits - 200 bytes - rotation constants
 ;;
@@ -778,23 +778,23 @@
   (param $input_offset i32)
   (param $input_length i32)
 
-  (local $leftover_offset i32)
-  (local $leftover_buffer i32)
-  (local $leftover_index i32)
+  (local $residue_offset i32)
+  (local $residue_buffer i32)
+  (local $residue_index i32)
   (local $tmp i32)
 
   ;; this is where we store the pointer
-  (set_local $leftover_offset (i32.add (get_local $context_offset) (i32.const 200)))
+  (set_local $residue_offset (i32.add (get_local $context_offset) (i32.const 200)))
   ;; this is where the buffer is
-  (set_local $leftover_buffer (i32.add (get_local $context_offset) (i32.const 208)))
+  (set_local $residue_buffer (i32.add (get_local $context_offset) (i32.const 208)))
 
-  (set_local $leftover_index (i32.load (get_local $leftover_offset)))
+  (set_local $residue_index (i32.load (get_local $residue_offset)))
 
   ;; process residue from last block
-  (if (i32.ne (get_local $leftover_index) (i32.const 0))
+  (if (i32.ne (get_local $residue_index) (i32.const 0))
     (then
       ;; the space left in the residue buffer
-      (set_local $tmp (i32.sub (i32.const 136) (get_local $leftover_index)))
+      (set_local $tmp (i32.sub (i32.const 136) (get_local $residue_index)))
 
       ;; limit to what we have as an input
       (if (i32.lt_u (get_local $input_length) (get_local $tmp))
@@ -803,21 +803,21 @@
 
       ;; fill up the residue buffer
       (call $memcpy
-        (i32.add (get_local $leftover_buffer) (get_local $leftover_index))
+        (i32.add (get_local $residue_buffer) (get_local $residue_index))
         (get_local $input_offset)
         (get_local $tmp)
       )
 
-      (set_local $leftover_index (i32.add (get_local $leftover_index) (get_local $tmp)))
+      (set_local $residue_index (i32.add (get_local $residue_index) (get_local $tmp)))
 
       ;; block complete
-      (if (i32.eq (get_local $leftover_index) (i32.const 136))
+      (if (i32.eq (get_local $residue_index) (i32.const 136))
         (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $context_offset))
 
-        (set_local $leftover_index (i32.const 0))
+        (set_local $residue_index (i32.const 0))
       )
 
-      (i32.store (get_local $leftover_offset) (get_local $leftover_index))
+      (i32.store (get_local $residue_offset) (get_local $residue_index))
 
       (set_local $input_length (i32.sub (get_local $input_length) (get_local $tmp)))
     )
@@ -840,13 +840,13 @@
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
     (then
       (call $memcpy
-        (i32.add (get_local $leftover_buffer) (get_local $leftover_index))
+        (i32.add (get_local $residue_buffer) (get_local $residue_index))
         (get_local $input_offset)
         (get_local $input_length)
       )
 
-      (set_local $leftover_index (i32.add (get_local $leftover_index) (get_local $input_length)))
-      (i32.store (get_local $leftover_offset) (get_local $leftover_index))
+      (set_local $residue_index (i32.add (get_local $residue_index) (get_local $input_length)))
+      (i32.store (get_local $residue_offset) (get_local $residue_index))
     )
   )
 )
@@ -860,31 +860,31 @@
   (param $context_offset i32)
   (param $output_offset i32)
 
-  (local $leftover_offset i32)
-  (local $leftover_buffer i32)
-  (local $leftover_index i32)
+  (local $residue_offset i32)
+  (local $residue_buffer i32)
+  (local $residue_index i32)
   (local $tmp i32)
 
   ;; this is where we store the pointer
-  (set_local $leftover_offset (i32.add (get_local $context_offset) (i32.const 200)))
+  (set_local $residue_offset (i32.add (get_local $context_offset) (i32.const 200)))
   ;; this is where the buffer is
-  (set_local $leftover_buffer (i32.add (get_local $context_offset) (i32.const 208)))
+  (set_local $residue_buffer (i32.add (get_local $context_offset) (i32.const 208)))
 
-  (set_local $leftover_index (i32.load (get_local $leftover_offset)))
-  (set_local $tmp (get_local $leftover_index))
+  (set_local $residue_index (i32.load (get_local $residue_offset)))
+  (set_local $tmp (get_local $residue_index))
 
   ;; clear the rest of the residue buffer
-  (call $memset (i32.add (get_local $leftover_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
+  (call $memset (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
-  (set_local $tmp (i32.add (get_local $leftover_buffer) (get_local $leftover_index)))
+  (set_local $tmp (i32.add (get_local $residue_buffer) (get_local $residue_index)))
   (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x01)))
 
   ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
-  (set_local $tmp (i32.add (get_local $leftover_buffer) (i32.const 135)))
+  (set_local $tmp (i32.add (get_local $residue_buffer) (i32.const 135)))
   (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x80)))
 
-  (call $KECCAK_BLOCK (get_local $leftover_buffer) (i32.const 136) (get_local $context_offset))
+  (call $KECCAK_BLOCK (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
 
   ;; the first 32 bytes pointed at by $output_offset is the final hash
   (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))

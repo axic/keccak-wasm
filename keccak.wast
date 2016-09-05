@@ -2,7 +2,7 @@
 ;; Keccak-256 (pre-standard SHA3) implementation in WASM
 ;;
 ;; Main entry point is $KECCAK which has 4 parameters:
-;; - context offset (i32) -> 792 bytes
+;; - context offset (i32) -> 616 bytes of context
 ;; - input offset (i32)
 ;; - input length (i32)
 ;; - output offset (i32) -> 32 byte hash
@@ -12,7 +12,7 @@
 ;; 200:   64 bits -   8 bytes - residue position
 ;; 208: 1536 bits - 192 bytes - residue buffer
 ;; 400: 1536 bits - 192 bytes - round constants
-;; 592: 1600 bits - 200 bytes - rotation constants
+;; 592:  192 bits -  24 bytes - rotation constants
 ;;
 ;; --
 ;;
@@ -386,7 +386,7 @@
 
     (set_local $tmp (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (i32.const 1) (get_local $i)))))
 
-    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load (i32.add (get_local $rotation_consts) (i32.mul (i32.const 8) (get_local $i))))))
+    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load8_u (i32.add (get_local $rotation_consts) (get_local $i)))))
 
     (set_local $i (i32.add (get_local $i) (i32.const 1)))
     (br $loop)
@@ -734,30 +734,30 @@
 
   ;; insert the rotation constants (used by $KECCAK_RHO)
   (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 592)))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 0)) (i64.const 1))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 8)) (i64.const 62))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 16)) (i64.const 28))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 24)) (i64.const 27))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 32)) (i64.const 36))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 40)) (i64.const 44))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 48)) (i64.const 6))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 56)) (i64.const 55))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 64)) (i64.const 20))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 72)) (i64.const 3))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 80)) (i64.const 10))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 88)) (i64.const 43))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 96)) (i64.const 25))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 104)) (i64.const 39))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 112)) (i64.const 41))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 120)) (i64.const 45))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 128)) (i64.const 15))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 136)) (i64.const 21))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 144)) (i64.const 8))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 152)) (i64.const 18))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 160)) (i64.const 2))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 168)) (i64.const 61))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 176)) (i64.const 56))
-  (i64.store (i32.add (get_local $rotation_consts) (i32.const 184)) (i64.const 14))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 0)) (i32.const 1))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 1)) (i32.const 62))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 2)) (i32.const 28))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 3)) (i32.const 27))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 4)) (i32.const 36))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 5)) (i32.const 44))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 6)) (i32.const 6))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 7)) (i32.const 55))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 8)) (i32.const 20))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 9)) (i32.const 3))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 10)) (i32.const 10))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 11)) (i32.const 43))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 12)) (i32.const 25))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 13)) (i32.const 39))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 14)) (i32.const 41))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 15)) (i32.const 45))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 16)) (i32.const 15))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 17)) (i32.const 21))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 18)) (i32.const 8))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 19)) (i32.const 18))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 20)) (i32.const 2))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 21)) (i32.const 61))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 22)) (i32.const 56))
+  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 23)) (i32.const 14))
 )
 
 ;;

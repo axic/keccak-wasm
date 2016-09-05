@@ -1,27 +1,18 @@
 ;;
 ;; Keccak-256 (pre-standard SHA3) implementation in WASM
 ;;
-;; Main entry point is $KECCAK which has 3 parameters:
+;; Main entry point is $KECCAK which has 4 parameters:
+;; - context offset (i32) -> 792 bytes
 ;; - input offset (i32)
 ;; - input length (i32)
-;; - output offset (i32)
-;;
-;; Output offset is special. It needs at least 592 bytes of space.
-;; (Of which the first 200 bytes is used as hash workspace,
-;; the second 192 bytes is used for the round constants and
-;; the third 192 bytes is used for the rotation constants.)
-;;
-;; The resulting hash will be the first 256 bits pointed by the output offset.
-;;
-;; NOTE: it only works for inputs multiple of the block size.
-;;       If the input is shorted, please pad it with trailing zeroes.
+;; - output offset (i32) -> 32 byte hash
 ;;
 ;; The context is laid out as follows:
 ;;   0: 1600 bits - 200 bytes - hashing state
 ;; 200:   64 bits -   8 bytes - buffer position
 ;; 208: 1536 bits - 192 bytes - leftover buffer
 ;; 400: 1536 bits - 192 bytes - round constants
-;; 592: 1536 bits - 192 bytes - rotation constants
+;; 592: 1600 bits - 200 bytes - rotation constants
 ;;
 ;; --
 ;;
@@ -706,8 +697,6 @@
 
 ;;
 ;; Initialise the context
-;;
-;; The space must be at least 728 bytes
 ;;
 (func $KECCAK_INIT
   (param $context_offset i32)

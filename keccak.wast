@@ -584,10 +584,7 @@
   (param $input_offset i32)
   (param $input_length i32)
   (param $context_offset i32)
-  
-  (local $workspace i32)
-  (set_local $workspace (get_local $context_offset))
-  
+
   ;; read blocks in little-endian order and XOR against workspace
 
   (i64.store
@@ -726,7 +723,7 @@
     )
   )
   
-  (call $KECCAK_PERMUTE (get_local $workspace))
+  (call $KECCAK_PERMUTE (get_local $context_offset))
 )
 
 ;;

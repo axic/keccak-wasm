@@ -880,11 +880,11 @@
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
   (set_local $tmp (i32.add (get_local $leftover_buffer) (get_local $leftover_index)))
-  (i32.store8 (get_local $tmp) (i32.or (i32.load (get_local $tmp)) (i32.const 0x01)))
+  (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x01)))
 
   ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
   (set_local $tmp (i32.add (get_local $leftover_buffer) (i32.const 135)))
-  (i32.store8 (get_local $tmp) (i32.or (i32.load (get_local $tmp)) (i32.const 0x80)))
+  (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x80)))
 
   (call $KECCAK_BLOCK (get_local $leftover_buffer) (i32.const 136) (get_local $context_offset))
 

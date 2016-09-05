@@ -711,22 +711,11 @@
 ;;
 (func $KECCAK_INIT
   (param $context_offset i32)
-  (local $i i32)
   (local $round_consts i32)
   (local $rotation_consts i32)
 
   ;; clear out the context memory
-  (set_local $i (i32.const 0))
-  (loop $done $loop
-    (if (i32.ge_u (get_local $i) (i32.const 400))
-      (br $done)
-    )
-
-    (i64.store (i32.add (get_local $context_offset) (get_local $i)) (i64.const 0))
-
-    (set_local $i (i32.add (get_local $i) (i32.const 8)))
-    (br $loop)
-  )
+  (call $memset (get_local $context_offset) (i32.const 0) (i32.const 400))
 
   ;; insert the round constants (used by $KECCAK_IOTA)
   (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
@@ -887,16 +876,7 @@
   (set_local $tmp (get_local $leftover_index))
 
   ;; clear the rest of the residue buffer
-  (loop $done $loop
-    (if (i32.ge_u (get_local $tmp) (i32.const 136))
-      (br $done)
-    )
-
-    (i32.store8 (get_local $tmp) (i32.const 0))
-
-    (set_local $tmp (i32.add (get_local $tmp) (i32.const 1)))
-    (br $loop)
-  )
+  (call $memset (i32.add (get_local $leftover_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
   (set_local $tmp (i32.add (get_local $leftover_buffer) (get_local $leftover_index)))

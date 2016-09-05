@@ -852,9 +852,9 @@
   ;;        and the residue buffer must be full of zeroes.
 
   ;; zero-out 136 bytes of space
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 584)))
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 592)))
   (loop $done $loop
-    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 720))
+    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 728))
       (br $done)
     )
 
@@ -864,7 +864,7 @@
     (br $loop)
   )
 
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 584)))
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 592)))
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
   (i32.store8 (get_local $zeroblock_offset) (i32.const 0x01))

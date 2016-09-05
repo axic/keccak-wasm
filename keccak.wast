@@ -14,7 +14,7 @@
   (func
     (result i32)
     (block
-      (call $KECCAK (i32.const 268) (i32.const 0) (i32.const 136) (i32.const 136))
+      (call $KECCAK (i32.const 168) (i32.const 0) (i32.const 136) (i32.const 136))
       (return (i32.const 136))
       (unreachable)
     )
@@ -582,7 +582,7 @@
 
 (func $KECCAK_BLOCK
   (param $input_offset i32)
-  (param $input_length i32)
+  (param $input_length i32) ;; ignored, we expect keccak256
   (param $context_offset i32)
 
   ;; read blocks in little-endian order and XOR against workspace
@@ -813,6 +813,51 @@
   (param $input_offset i32)
   (param $input_length i32)
 
+  (local $leftover_offset i32)
+  (local $leftover_buffer i32)
+  (local $leftover_index i32)
+  (local $tmp i32)
+
+  ;; this is where we store the pointer
+  (set_local $leftover_offset (i32.add (get_local $context_offset) (i32.const 200)))
+  ;; this is where the buffer is
+  (set_local $leftover_buffer (i32.add (get_local $context_offset) (i32.const 208)))
+
+  (set_local $leftover_index (i32.load (get_local $leftover_offset)))
+
+  ;; process residue from last block
+  (if (i32.ne (get_local $leftover_index) (i32.const 0))
+    (then
+      ;; the space left in the residue buffer
+      (set_local $tmp (i32.sub (i32.const 136) (get_local $leftover_index)))
+
+      ;; limit to what we have as an input
+      (if (i32.lt_u (get_local $input_length) (get_local $tmp))
+        (set_local $tmp (get_local $input_length))
+      )
+
+      ;; fill up the residue buffer
+      (call $memcpy
+        (i32.add (get_local $leftover_buffer) (get_local $leftover_index))
+        (get_local $input_offset)
+        (get_local $tmp)
+      )
+
+      (set_local $leftover_index (i32.add (get_local $leftover_index) (get_local $tmp)))
+
+      ;; block complete
+      (if (i32.eq (get_local $leftover_index) (i32.const 136))
+        (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+
+        (set_local $leftover_index (i32.const 0))
+      )
+
+      (i32.store (get_local $leftover_offset) (get_local $leftover_index))
+
+      (set_local $input_length (i32.sub (get_local $input_length) (get_local $tmp)))
+    )
+  )
+
   ;; while (input_length > block_size)
   (loop $done $loop
     (if (i32.lt_u (get_local $input_length) (i32.const 136))
@@ -826,10 +871,18 @@
     (br $loop)
   )
 
-  ;; process last <block_size block
-  ;; FIXME: the last block needs to be padded with zeroes and two markers need to be added
+  ;; copy to the residue buffer
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
-    (call $KECCAK_BLOCK (get_local $input_offset) (get_local $input_length) (get_local $context_offset))
+    (then
+      (call $memcpy
+        (i32.add (get_local $leftover_buffer) (get_local $leftover_index))
+        (get_local $input_offset)
+        (get_local $input_length)
+      )
+
+      (set_local $leftover_index (i32.add (get_local $leftover_index) (get_local $input_length)))
+      (i32.store (get_local $leftover_offset) (get_local $leftover_index))
+    )
   )
 )
 
@@ -842,34 +895,40 @@
   (param $context_offset i32)
   (param $output_offset i32)
 
-  (local $zeroblock_offset i32)
+  (local $leftover_offset i32)
+  (local $leftover_buffer i32)
+  (local $leftover_index i32)
+  (local $tmp i32)
 
-  ;; finalize
-  ;; FIXME: this is wrong. We assume the input was a multiple of the blocksize
-  ;;        and the residue buffer must be full of zeroes.
+  ;; this is where we store the pointer
+  (set_local $leftover_offset (i32.add (get_local $context_offset) (i32.const 200)))
+  ;; this is where the buffer is
+  (set_local $leftover_buffer (i32.add (get_local $context_offset) (i32.const 208)))
 
-  ;; zero-out 136 bytes of space
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 784)))
+  (set_local $leftover_index (i32.load (get_local $leftover_offset)))
+  (set_local $tmp (get_local $leftover_index))
+
+  ;; clear the rest of the residue buffer
   (loop $done $loop
-    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 920))
+    (if (i32.ge_u (get_local $tmp) (i32.const 136))
       (br $done)
     )
 
-    (i64.store (get_local $zeroblock_offset) (i64.const 0))
+    (i32.store8 (get_local $tmp) (i32.const 0))
 
-    (set_local $zeroblock_offset (i32.add (get_local $zeroblock_offset) (i32.const 8)))
+    (set_local $tmp (i32.add (get_local $tmp) (i32.const 1)))
     (br $loop)
   )
 
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 784)))
-
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
-  (i32.store8 (get_local $zeroblock_offset) (i32.const 0x01))
+  (set_local $tmp (i32.add (get_local $leftover_buffer) (get_local $leftover_index)))
+  (i32.store8 (get_local $tmp) (i32.or (i32.load (get_local $tmp)) (i32.const 0x01)))
 
   ;; ((char*)ctx->message)[block_size - 1] |= 0x80;
-  (i32.store8 (i32.add (get_local $zeroblock_offset) (i32.const 135)) (i32.const 0x80))
+  (set_local $tmp (i32.add (get_local $leftover_buffer) (i32.const 135)))
+  (i32.store8 (get_local $tmp) (i32.or (i32.load (get_local $tmp)) (i32.const 0x80)))
 
-  (call $KECCAK_BLOCK (get_local $zeroblock_offset) (i32.const 136) (get_local $context_offset))
+  (call $KECCAK_BLOCK (get_local $leftover_buffer) (i32.const 136) (get_local $context_offset))
 
   ;; the first 32 bytes pointed at by $output_offset is the final hash
   (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))
@@ -890,6 +949,33 @@
   (call $KECCAK_INIT (get_local $context_offset))
   (call $KECCAK_UPDATE (get_local $context_offset) (get_local $input_offset) (get_local $input_length))
   (call $KECCAK_FINISH (get_local $context_offset) (get_local $output_offset))
+)
+
+;;
+;; memcpy from ewasm-libc/ewasm-cleanup
+;;
+(func $memcpy
+  (param $dst i32)
+  (param $src i32)
+  (param $length i32)
+  (result i32)
+
+  (local $i i32)
+
+  (set_local $i (i32.const 0))
+
+  (loop $done $loop
+    (if (i32.ge_u (get_local $i) (get_local $length))
+      (br $done)
+    )
+
+    (i32.store8 (i32.add (get_local $dst) (get_local $i)) (i32.load8_u (i32.add (get_local $src) (get_local $i))))
+
+    (set_local $i (i32.add (get_local $i) (i32.const 1)))
+    (br $loop)
+  )
+
+  (return (get_local $dst))
 )
 
 )

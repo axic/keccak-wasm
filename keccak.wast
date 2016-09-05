@@ -714,8 +714,7 @@
   (local $round_consts i32)
   (local $rotation_consts i32)
 
-  ;; clear out the context memory
-  (call $memset (get_local $context_offset) (i32.const 0) (i32.const 400))
+  (call $KECCAK_RESET (get_local $context_offset))
 
   ;; insert the round constants (used by $KECCAK_IOTA)
   (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
@@ -770,6 +769,16 @@
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 168)) (i64.const 61))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 176)) (i64.const 56))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 184)) (i64.const 14))
+)
+
+;;
+;; Reset the context
+;;
+(func $KECCAK_RESET
+  (param $context_offset i32)
+
+  ;; clear out the context memory
+  (call $memset (get_local $context_offset) (i32.const 0) (i32.const 400))
 )
 
 ;;

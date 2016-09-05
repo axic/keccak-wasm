@@ -544,8 +544,8 @@
   (local $round_consts i32)
   (local $round i32)
 
-  (set_local $round_consts (i32.add (get_local $workspace) (i32.const 200)))
-  (set_local $rotation_consts (i32.add (get_local $workspace) (i32.const 400)))
+  (set_local $round_consts (i32.add (get_local $workspace) (i32.const 400)))
+  (set_local $rotation_consts (i32.add (get_local $workspace) (i32.const 592)))
 
   ;; for (round = 0; round < 24; round++)
   (set_local $round (i32.const 0))
@@ -740,7 +740,7 @@
   ;; clear out the context memory
   (set_local $i (i32.const 0))
   (loop $done $loop
-    (if (i32.ge_u (get_local $i) (i32.const 200))
+    (if (i32.ge_u (get_local $i) (i32.const 400))
       (br $done)
     )
 
@@ -751,7 +751,7 @@
   )
 
   ;; insert the round constants (used by $KECCAK_IOTA)
-  (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 200)))
+  (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
   (i64.store (i32.add (get_local $round_consts) (i32.const 0)) (i64.const 0x0000000000000001))
   (i64.store (i32.add (get_local $round_consts) (i32.const 8)) (i64.const 0x0000000000008082))
   (i64.store (i32.add (get_local $round_consts) (i32.const 16)) (i64.const 0x800000000000808A))
@@ -778,7 +778,7 @@
   (i64.store (i32.add (get_local $round_consts) (i32.const 184)) (i64.const 0x8000000080008008))
 
   ;; insert the rotation constants (used by $KECCAK_RHO)
-  (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 400)))
+  (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 592)))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 0)) (i64.const 1))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 8)) (i64.const 62))
   (i64.store (i32.add (get_local $rotation_consts) (i32.const 16)) (i64.const 28))
@@ -849,9 +849,9 @@
   ;;        and the residue buffer must be full of zeroes.
 
   ;; zero-out 136 bytes of space
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 592)))
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 784)))
   (loop $done $loop
-    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 728))
+    (if (i32.ge_u (get_local $zeroblock_offset) (i32.const 920))
       (br $done)
     )
 
@@ -861,7 +861,7 @@
     (br $loop)
   )
 
-  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 592)))
+  (set_local $zeroblock_offset (i32.add (get_local $context_offset) (i32.const 784)))
 
   ;; ((char*)ctx->message)[ctx->rest] |= 0x01;
   (i32.store8 (get_local $zeroblock_offset) (i32.const 0x01))

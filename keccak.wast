@@ -24,7 +24,7 @@
 ;; gets implemented: https://github.com/WebAssembly/sexpr-wasm-prototype/issues/92
 ;;
 
-(func $KECCAK_THETA
+(func $keccak_theta
   (param $context_offset i32)
 
   (local $C0 i64)
@@ -361,7 +361,7 @@
   )
 )
 
-(func $KECCAK_RHO
+(func $keccak_rho
   (param $context_offset i32)
   (param $rotation_consts i32)
 
@@ -393,7 +393,7 @@
   )
 )
 
-(func $KECCAK_PI
+(func $keccak_pi
   (param $context_offset i32)
 
   (local $A1 i64)
@@ -429,7 +429,7 @@
   (i64.store (i32.add (get_local $context_offset) (i32.const 80)) (get_local $A1))
 )
 
-(func $KECCAK_CHI
+(func $keccak_chi
   (param $context_offset i32)
 
   (local $A0 i64)
@@ -506,7 +506,7 @@
   )
 )
 
-(func $KECCAK_PERMUTE
+(func $keccak_permute
   (param $context_offset i32)
 
   (local $rotation_consts i32)
@@ -524,16 +524,16 @@
     )
 
     ;; theta transform
-    (call $KECCAK_THETA (get_local $context_offset))
+    (call $keccak_theta (get_local $context_offset))
 
     ;; rho transform
-    (call $KECCAK_RHO (get_local $context_offset) (get_local $rotation_consts))
+    (call $keccak_rho (get_local $context_offset) (get_local $rotation_consts))
 
     ;; pi transform
-    (call $KECCAK_PI (get_local $context_offset))
+    (call $keccak_pi (get_local $context_offset))
 
     ;; chi transform
-    (call $KECCAK_CHI (get_local $context_offset))
+    (call $keccak_chi (get_local $context_offset))
 
     ;; iota transform
     ;; context_offset[0] ^= KECCAK_ROUND_CONSTANTS[round];
@@ -549,7 +549,7 @@
   )  
 )
 
-(func $KECCAK_BLOCK
+(func $keccak_block
   (param $input_offset i32)
   (param $input_length i32) ;; ignored, we expect keccak256
   (param $context_offset i32)
@@ -692,18 +692,18 @@
     )
   )
   
-  (call $KECCAK_PERMUTE (get_local $context_offset))
+  (call $keccak_permute (get_local $context_offset))
 )
 
 ;;
 ;; Initialise the context
 ;;
-(func $KECCAK_INIT
+(func $keccak_init
   (param $context_offset i32)
   (local $round_consts i32)
   (local $rotation_consts i32)
 
-  (call $KECCAK_RESET (get_local $context_offset))
+  (call $keccak_reset (get_local $context_offset))
 
   ;; insert the round constants (used by $KECCAK_IOTA)
   (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
@@ -732,7 +732,7 @@
   (i64.store (i32.add (get_local $round_consts) (i32.const 176)) (i64.const 0x0000000080000001))
   (i64.store (i32.add (get_local $round_consts) (i32.const 184)) (i64.const 0x8000000080008008))
 
-  ;; insert the rotation constants (used by $KECCAK_RHO)
+  ;; insert the rotation constants (used by $keccak_rho)
   (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 592)))
   (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 0)) (i32.const 1))
   (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 1)) (i32.const 62))
@@ -763,7 +763,7 @@
 ;;
 ;; Reset the context
 ;;
-(func $KECCAK_RESET
+(func $keccak_reset
   (param $context_offset i32)
 
   ;; clear out the context memory
@@ -773,7 +773,7 @@
 ;;
 ;; Push input to the context
 ;;
-(func $KECCAK_UPDATE
+(func $keccak_update
   (param $context_offset i32)
   (param $input_offset i32)
   (param $input_length i32)
@@ -812,7 +812,7 @@
 
       ;; block complete
       (if (i32.eq (get_local $residue_index) (i32.const 136))
-        (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+        (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
 
         (set_local $residue_index (i32.const 0))
       )
@@ -829,7 +829,7 @@
       (br $done)
     )
 
-    (call $KECCAK_BLOCK (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+    (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
 
     (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
     (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
@@ -856,7 +856,7 @@
 ;;
 ;; The 256 bit hash is returned at the output offset.
 ;;
-(func $KECCAK_FINISH
+(func $keccak_finish
   (param $context_offset i32)
   (param $output_offset i32)
 
@@ -884,7 +884,7 @@
   (set_local $tmp (i32.add (get_local $residue_buffer) (i32.const 135)))
   (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x80)))
 
-  (call $KECCAK_BLOCK (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
+  (call $keccak_block (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
 
   ;; the first 32 bytes pointed at by $output_offset is the final hash
   (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))
@@ -896,13 +896,13 @@
 ;;
 ;; Calculate the hash. Helper method incorporating the above three.
 ;;
-(func $KECCAK
+(func $keccak
   (param $context_offset i32)
   (param $input_offset i32)
   (param $input_length i32)
   (param $output_offset i32)
 
-  (call $KECCAK_INIT (get_local $context_offset))
-  (call $KECCAK_UPDATE (get_local $context_offset) (get_local $input_offset) (get_local $input_length))
-  (call $KECCAK_FINISH (get_local $context_offset) (get_local $output_offset))
+  (call $keccak_init (get_local $context_offset))
+  (call $keccak_update (get_local $context_offset) (get_local $input_offset) (get_local $input_length))
+  (call $keccak_finish (get_local $context_offset) (get_local $output_offset))
 )

@@ -14,7 +14,7 @@
   (func
     (result i32)
     (block
-      (call $KECCAK (i32.const 168) (i32.const 0) (i32.const 136) (i32.const 136))
+      (call $keccak (i32.const 168) (i32.const 0) (i32.const 136) (i32.const 136))
       (return (i32.const 136))
       (unreachable)
     )
